@@ -1,0 +1,55 @@
+{% extends base %}
+
+{% block extjs %}
+{% endblock %}
+
+{% block content %}
+
+<div>
+<h2>Zadanie:</h2>
+Znaleźć maksimum funkcji: F(x)= (x MOD 1) * (COS( 20 * π * x) – SIN(x)) w przedziale <-4; 12>,
+z dokładnością 0,001 (10-3).
+</div>
+<br/>
+<br/>
+
+<div class="left">
+    <div class=''>Podaj przedział rozwiązań [a,b]:</div>
+    <div class="a-value"><label>Wpisz a:</label><input type='text' value='-4' class="width-50"/></div>
+    <div class="b-value"><label>Wpisz b:</label><input type='text' value='12' class="width-50"/></div>
+
+    <div class="clearfix"></div>
+    <div class="precision-value "><label>Podaj dokładność rozwiązania (ilość liczb po przecinku):</label><input type='text' value='3'  class="width-50"/></div>
+    <div class="n-value "><label>Podaj liczbe cząsteczek:</label><input type='text' value='10' class="width-50"/></div>
+    <div class="t-value "><label>Podaj liczbe kroków czasowych(T):</label><input type='text' value='10' class="width-50"/></div>
+    <div class="c1-value "><label>Podaj wagę c1:</label><input type='text' value='0.2'  class="width-50"/></div>
+    <div class="c2-value "><label>Podaj wagę c2:</label><input type='text' value='0.2'  class="width-50"/></div>
+    <div class="c3-value "><label>Podaj wagę c3:</label><input type='text' value='0.2'  class="width-50"/></div>
+    <div class="neighbour-percent-value "><label>Podaj procent sasiedztwa:</label><input type='text' value='50' class="width-50"/></div>
+    <div class="neighbour-r-value"><label>Podaj promień zasięgu sąsiada:</label><input type='text' value='1' class="width-50"/></div>
+
+</div>
+<div class="left">
+    <div class="calc"><button id="calculate">Oblicz</button></div>
+</div>
+    <div class="clearfix"></div>
+    
+    <div class="clearfix"></div>
+    <br />
+    <br />
+    
+    <div id="cr-stage"></div>
+
+{% endblock %}
+
+{% block javascript %} 
+    <script type="text/javascript" src="/web/js/lib/underscore.js"> </script>
+    <script type="text/javascript" src="/web/js/lib/backbone.js"> </script>
+    <script type="text/javascript" src="/web/js/lib/jquery-1.7.min.js"> </script>
+    <script type="text/javascript" src="/web/js/lib/require-jquery.js"> </script>
+    <script type="text/javascript" src="/web/js/lib/crafty.js"> </script>
+    <script type="text/javascript" src="/web/js/main.js"> </script>
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}

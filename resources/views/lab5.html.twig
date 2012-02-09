@@ -1,0 +1,70 @@
+{% extends base %}
+
+
+{% block content %}
+<div>
+<h2>Zadanie:</h2>
+Znaleźć maksimum funkcji: F(x)= (x MOD 1) * (COS( 20 * π * x) – SIN(x)) w przedziale &lt;-4; 12&gt;,
+z dokładnością 0,001 (10-3).
+</div>
+<br>
+<br>
+
+<form action="" type="POST">
+<div class="left">
+	<div class="">Podaj przedział rozwiązań [a,b]:</div>
+	<div class="a-value"><label>Wpisz a:</label><input name="a-value" type="text" value="{{a}}" class="width-50"></div>
+	<div class="b-value"><label>Wpisz b:</label><input name="b-value" type="text" value="{{b}}" class="width-50"></div>
+
+	<div class="clearfix"></div>
+	<div class="precision-value ">
+		<label>Podaj dokładność rozwiązania (ilość liczb po przecinku):</label>
+		<input name="precision-value" type="text" value="{{ precision}}" class="width-50">
+	</div>
+	<div class="n-value ">
+		<label>Podaj rozmiar populacji:</label>
+		<input name="population-value" type="text" value="{{ population }}" class="width-50">
+	</div>
+
+</div>
+<div class="left">
+	<div class="calc"><input id="calculate" type="submit" value="Oblicz" /></div>
+</div>
+</form>	
+	<div class="clearfix"></div>
+	<br>
+	<br>
+
+	<table border="1" id="result-tab">
+		<tbody>
+			<tr>
+				<th>Lp.</th>
+				<th>ID</th>
+				<th>x-real</th>
+				<th>f(x-real)</th>
+				<th>najlepszy x-real</th>
+				<th>f(najlepszy)</th>
+			</tr>
+			{% for result in highClimpResults %}
+			<tr>
+				<td>{{ loop.index }}</td>
+				<td>{{ result.id }}</td>
+				<td>{{ result.xreal }}</td>
+				<td>{{ result.eval_func }}</td>
+				<td>{{ result.best.xreal }}</td>
+				<td>{{ result.best.eval_func }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<div class="clearfix"></div>
+	<br>
+	<div>Najlepsze rozwiązanie Xreal = {{ fbest.xreal }}, Xbin = {{ fbest.xbin }}, f(X) = {{ fbest.eval_func }}</div>
+
+</div>
+
+{% endblock %}
+
+{% block javascript %} 
+{% endblock %}

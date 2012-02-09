@@ -1,0 +1,280 @@
+{% extends base %}
+
+
+{% block content %}
+<script type="text/javascript" src="/web/js/extjsToExcel.js"></script>
+<div>
+<h2>Zadanie:</h2>
+Znaleźć maksimum funkcji: F(x)= (x MOD 1) * (COS( 20 * π * x) – SIN(x)) w przedziale &lt;-4; 12&gt;,
+z dokładnością 0,001 (10-3).
+</div>
+<br>
+<br>
+
+<form action="" type="POST">
+<div class="left">
+	<div class="">Podaj przedział rozwiązań [a,b]:</div>
+	<div class="a-value"><label>Wpisz a:</label><input name="a-value" type="text" value="{{a}}" class="width-50"></div>
+	<div class="b-value"><label>Wpisz b:</label><input name="b-value" type="text" value="{{b}}" class="width-50"></div>
+
+	<div class="clearfix"></div>
+	<div class="precision-value ">
+		<label>Podaj dokładność rozwiązania (ilość liczb po przecinku):</label>
+		<input name="precision-value" type="text" value="{{ precision}}" class="width-50">
+	</div>
+	<div class="n-value ">
+		<label>Podaj rozmiar populacji:</label>
+		<input name="population-value" type="text" value="{{ population }}" class="width-50">
+	</div>
+	<div class="p-value ">
+		<label>Podaj pradopodobienstwo krzyżowania od:</label>
+		<input name="cross-probability-value" type="text" value="{{ cross_probability }}" class="width-50"> do: 1
+	</div>
+	<div class="m-value ">
+		<label>Podaj pradopodobienstwo mutacji do:</label>
+		<input name="mutation-probability-value" type="text" value="{{ mutation_probability }}" class="width-50">
+	</div>
+	<div class="t-value ">
+		<label>Podaj ilość pokoleń:</label>
+		<input name="amount-population-value" type="text" value="{{ amount_population }}" class="width-50">
+	</div>
+	<div class="e-value ">
+		<label>Podaj elite:</label>
+		<input name="amount-elite-value" type="text" value="{{ amount_elite }}" class="width-50">
+	</div>
+
+</div>
+<div class="left">
+	<div class="calc"><input id="calculate" type="submit" value="Oblicz" /></div>
+</div>
+</form>
+	<div class="clearfix"></div>
+
+	
+	<div class="clearfix"></div>
+	<br>
+	<br>
+	
+</div>
+
+{% endblock %}
+
+{% block javascript %} 
+<script type="text/javascript">
+
+Ext.Loader.setConfig({
+    enabled: true
+});
+
+Ext.require([
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.ux.RowExpander',
+]);
+
+Ext.require('Ext.chart.*');
+Ext.require(['Ext.Window', 'Ext.fx.target.Sprite', 'Ext.layout.container.Fit']);
+
+Ext.onReady(function(){
+    Ext.define('lab3', {
+        extend: 'Ext.data.Model',
+        fields: [
+        	{name: 'i', type: 'string'},
+            {name: 'xreal', type: 'float'},
+            {name: 'eval_func', type: 'float'},
+            {name: 'percent_in_population', type: 'float'},
+            {name: 'population', type: 'auto'}
+         ]
+    });
+
+    Ext.define('lab3chart', {
+        extend: 'Ext.data.Model',
+        fields: [
+            {name: 'i', type: 'string'},
+            {name: 'fmin', type: 'float'},
+            {name: 'favg', type: 'float'},
+            {name: 'fmax', type: 'float'}
+         ]
+    });
+{% autoescape false %}
+	var getLocalStoreForChart = function() {
+        return Ext.create('Ext.data.ArrayStore', {
+            model: 'lab3chart',
+            data: {{ resultsForChartInJson }}
+        });
+    };
+    // Array data for the grids
+    
+    Ext.grid.dummyData = {{ resultsInJson }};
+{% endautoescape %}
+
+    var getLocalStore = function() {
+        return Ext.create('Ext.data.ArrayStore', {
+            model: 'lab3',
+            data: Ext.grid.dummyData
+        });
+    };
+
+// Toolbar
+            var tb = new Ext.Toolbar({
+                items: [{
+                    xtype: 'button',
+                    text: 'Export to Excel (ActiveX)',
+                    handler: function() {
+                        Ext.ux.Grid2Excel.Save2Excel(grid3);
+                    }
+                    }]
+                });
+
+    var grid3 = Ext.create('Ext.grid.Panel', {
+        store: getLocalStore(),
+        tbar: tb,
+        columns: [
+            {text: 'nr populacji', width: 120, sortable: true, dataIndex: 'i'},
+            {text: "najepszy x-real", width: 120, sortable: true, dataIndex: 'xreal'},
+            {text: "f(x-real)", width: 120, sortable: true, dataIndex: 'eval_func'},
+            {text: "udział(%)", width: 120, sortable: true, dataIndex: 'percent_in_population'},
+        ],
+        columnLines: true,
+        title:'Wartość populacji',
+        width: 485,
+        plugins: [{
+            ptype: 'rowexpander',
+            rowBodyTpl : [
+                '<p><b>Populacja:</b> {population}</p>'
+            ]
+        }],
+        iconCls:'icon-grid',
+        renderTo: Ext.getBody()
+    });
+
+    var win = Ext.create('Ext.Window', {
+        width: 800,
+        height: 600,
+        minHeight: 400,
+        minWidth: 550,
+        hidden: false,
+        maximizable: true,
+        title: 'Wykres',
+        renderTo: Ext.getBody(),
+        layout: 'fit',
+        items: {
+            xtype: 'chart',
+            style: 'background:#fff',
+            animate: true,
+            store: getLocalStoreForChart(),
+            shadow: true,
+            theme: 'Category1',
+            legend: {
+                position: 'right'
+            },
+            axes: [{
+                type: 'Numeric',
+                position: 'left',
+                fields: ['fmin', 'favg', 'fmax'],
+                title: 'Wykres',
+                minorTickSteps: 1,
+                grid: {
+                    odd: {
+                        opacity: 1,
+                        fill: '#ddd',
+                        stroke: '#bbb',
+                        'stroke-width': 0.5
+                    }
+                }
+            }, {
+                type: 'Category',
+                position: 'bottom',
+                fields: ['i'],
+                title: 'Numer populacji'
+            }],
+            series: [{
+                type: 'line',
+                highlight: {
+                    size: 7,
+                    radius: 7
+                },
+                axis: 'left',
+                xField: 'i',
+                yField: 'fmin',
+                markerConfig: {
+                    type: 'cross',
+                    size: 4,
+                    radius: 4,
+                    'stroke-width': 0
+                }
+            }, {
+                type: 'line',
+                highlight: {
+                    size: 7,
+                    radius: 7
+                },
+                axis: 'left',
+                smooth: true,
+                xField: 'i',
+                yField: 'favg',
+                markerConfig: {
+                    type: 'circle',
+                    size: 4,
+                    radius: 4,
+                    'stroke-width': 0
+                }
+            }, {
+                type: 'line',
+                highlight: {
+                    size: 7,
+                    radius: 7
+                },
+                axis: 'left',
+                xField: 'i',
+                yField: 'fmax',
+                markerConfig: {
+                    type: 'circle',
+                    size: 4,
+                    radius: 4,
+                    'stroke-width': 0
+                }
+            }]
+        }
+    });
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+{% endblock %}
